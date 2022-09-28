@@ -1,0 +1,41 @@
+node{
+    def mavenHome=tool name: "maven 3.8.6"
+  stage('1clonecode'){
+    git "https://github.com/adebayosa16/maven-web-application"
+    //sh "git clone https://github.com/adebayosa16/maven-web-application"
+    //bat "git clone https://github.com/adebayosa16/maven-web-application"
+  }
+  stage('2Test&Build'){
+      sh "${mavenHome}/bin/mvn clean package"
+      //bat "${mavenHome}/bin/mvn clean package" for window system use bat instead of sh
+  }
+  stage('3codeQuality'){
+      sh "${mavenHome}/bin/mvn clean sonar:sonar"
+  }
+  stage('4uploadartifacts'){
+      sh "${mavenHome}/bin/mvn deploy"
+      // vi pom.xml and added repository details   
+      // vi setting.xml and add AUTHENTICATION detail
+  }
+  stage('5deploy2UAT'){
+    sh "echo 'deploy to UAT'  "
+    deploy adapters: [tomcat9(credentialsId: 'tomcat-credential-updated', path: '', url: 'http://18.144.50.120:8080/tesla/')], contextPath: null, war: 'target/*war'
+  } 
+  stage('6approvalGate'){
+    sh "echo 'ready for review' "
+    timeout(time:5, unit:'DAYS'){
+    input message: 'Application ready for deployment, Please review and approve'
+    }
+  }
+  stage('7deploy2Prod'){
+    sh "sleep 50"
+    deploy adapters: [tomcat9(credentialsId: 'tomcat-credential-updated', path: '', url: 'http://18.144.50.120:8080/tesla/')], contextPath: null, war: 'target/*war'  
+  }
+  stage('8emailNotification'){
+      emailext body: '''Hi everyone,
+
+check the build status.
+
+adebayosa16.''', recipientProviders: [developers(), upstreamDevelopers(), buildUser(), brokenBuildSuspects(), brokenTestsSuspects(), contributor()], subject: 'Build status'
+  }
+}
