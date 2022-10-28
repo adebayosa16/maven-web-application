@@ -96,13 +96,13 @@
 	    <repository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Releases Nexus Repository</name>
-	      <url>http://54.219.246.52:8081/repository/Tesla-releases/</url>
+	      <url>http://54.219.70.29:8081/repository/ebayl_releases/</url>
 	    </repository>
 	    
 	    <snapshotRepository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Snapshot Nexus Repository </name>
-	      <url>http://54.219.246.52:8081/repository/Tesla-snapshot/</url>
+	      <url>http://54.219.70.29:8081/repository/ebayl_snapshot/</url>
 	    </snapshotRepository>
 	    
 	</distributionManagement>
